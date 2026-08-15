@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingestion-service
+  namespace: axion
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: ingestion-service
+
+  template:
+    metadata:
+      labels:
+        app: ingestion-service
+
+    spec:
+      containers:
+        - name: ingestion-service
+          image:  burhan1237/axion-ingestion:v1
+
+          ports:
+            - containerPort: 8080
+
+          env:
+            - name: POSTGRES_HOST
+              value: postgres-service
+
+            - name: POSTGRES_PORT
+              value: "5432"
+
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_DB
